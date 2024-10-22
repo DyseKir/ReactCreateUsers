@@ -14,10 +14,7 @@ function App() {
 
 	const createUserHandler = (name: string, age: number) => {
 		setUsersList(prevUserList => {
-			return [
-				...prevUserList,
-				{ name, age, id: Math.random().toString() }, // Генерируем id здесь
-			]
+			return [...prevUserList, { name, age, id: Math.random().toString() }]
 		})
 	}
 

@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react'
+import React, { FormEvent, useState, useRef } from 'react'
 import Card from '../UI/Card'
 import classes from './CreateUser.module.scss'
 import Button from '../UI/Button'
@@ -9,40 +9,39 @@ interface CreateUserProps {
 }
 
 const CreateUser: React.FC<CreateUserProps> = props => {
-	const [inputName, setInputName] = useState('')
-	const [inputAge, setInputAge] = useState('')
+	const nameInputRef = useRef<HTMLInputElement>(null)
+	const ageInputRef = useRef<HTMLInputElement>(null)
+
 	const [error, setError] = useState<{ title: string; message: string } | null>(
 		null
 	)
 
 	const createUserHandler = (event: FormEvent) => {
 		event.preventDefault()
-		if (inputName.trim().length === 0 || inputAge.trim().length === 0) {
+
+		const enteredName = nameInputRef.current!.value
+		const enteredUserAge = ageInputRef.current!.value
+
+		if (enteredName.trim().length === 0 || enteredUserAge.trim().length === 0) {
 			setError({
 				title: 'Invalid input',
 				message: 'Please enter a valid name and age (non-empty values).',
 			})
 			return
 		}
-		if (+inputAge < 1) {
+		if (+enteredUserAge < 1) {
 			setError({
 				title: 'Invalid age',
 				message: 'Please enter a valid age (> 0).',
 			})
 			return
 		}
-		props.onCreateUser(inputName, +inputAge)
 
-		setInputName('')
-		setInputAge('')
-	}
+		props.onCreateUser(enteredName, +enteredUserAge)
 
-	const nameChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setInputName(e.target.value)
-	}
-
-	const ageChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setInputAge(e.target.value)
+		// Очищаем инпуты после добавления пользователя
+		nameInputRef.current!.value = ''
+		ageInputRef.current!.value = ''
 	}
 
 	const errorHandler = () => {
@@ -50,7 +49,7 @@ const CreateUser: React.FC<CreateUserProps> = props => {
 	}
 
 	return (
-		<div>
+		<>
 			{error && (
 				<ErrorModal
 					title={error.title}
@@ -61,23 +60,13 @@ const CreateUser: React.FC<CreateUserProps> = props => {
 			<Card className={classes.input}>
 				<form onSubmit={createUserHandler}>
 					<label htmlFor='name'>Name</label>
-					<input
-						id='name'
-						type='text'
-						value={inputName}
-						onChange={nameChangeHandler}
-					/>
+					<input id='name' type='text' ref={nameInputRef} />
 					<label htmlFor='age'>Age</label>
-					<input
-						id='age'
-						type='number'
-						value={inputAge}
-						onChange={ageChangeHandler}
-					/>
+					<input id='age' type='number' min='1' step='1' ref={ageInputRef} />
 					<Button type='submit'>Add new User</Button>
 				</form>
 			</Card>
-		</div>
+		</>
 	)
 }
 

@@ -1,15 +1,9 @@
 import React from 'react'
-import classes from './UserList.module.scss'
 import Card from '../UI/Card'
-
-interface User {
-	name: string
-	age: number
-	id: string
-}
+import classes from './UserList.module.scss'
 
 interface UserListProps {
-	users: User[]
+	users: { name: string; age: number; id: string }[]
 }
 
 const UserList: React.FC<UserListProps> = props => {
@@ -18,7 +12,7 @@ const UserList: React.FC<UserListProps> = props => {
 			<ul>
 				{props.users.map(user => (
 					<li key={user.id}>
-						{user.name} - {user.age} years old
+						{user.name} ({user.age} years old)
 					</li>
 				))}
 			</ul>
